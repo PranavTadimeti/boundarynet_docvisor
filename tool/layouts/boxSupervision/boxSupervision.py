@@ -260,43 +260,43 @@ def app(metaData):
     if "collection" in currData:
         st.info("This image is taken from the collection: "+currData["collection"]) 
 
-    try:
-        region_img = PlotImage.RegionImage(currData,outputMasks,state.outputs_locked[key])
-        fig = region_img.renderImage()
+    # try:
+    region_img = PlotImage.RegionImage(currData,outputMasks,state.outputs_locked[key])
+    fig = region_img.renderImage()
 
-        st.plotly_chart(fig)
+    st.plotly_chart(fig)
 
-        metricsStr = display_metrics(currData)
-        st.write(metricsStr)
+    metricsStr = display_metrics(currData)
+    st.write(metricsStr)
+    
+    b_c1,_,b_c2 = st.beta_columns([3,0.1,20])
+
+    if dataset_selected == "bookmarks":
         
-        b_c1,_,b_c2 = st.beta_columns([3,0.1,20])
+        if b_c1.button("Save 💾",key="box1"):
+            save_current_image(metaData["metaData"]["savePath"],currData)    
 
-        if dataset_selected == "bookmarks":
+        if b_c2.button("Save All 💾",key="box1"):
             
-            if b_c1.button("Save 💾",key="box1"):
-                save_current_image(metaData["metaData"]["savePath"],currData)    
+            for b in state.bookmarks[key]:
+                save_current_image(metaData["metaData"]["savePath"],b)                
+        
+    else:
+        
+        if b_c1.button("Bookmark 🔖",key="box1"):
+            if sorted_data[state.box_counter[key]] not in state.bookmarks[key]:
+                state.bookmarks[key].append(sorted_data[state.box_counter[key]])                                        
 
-            if b_c2.button("Save All 💾",key="box1"):
-                
-                for b in state.bookmarks[key]:
-                    save_current_image(metaData["metaData"]["savePath"],b)                
-            
-        else:
-            
-            if b_c1.button("Bookmark 🔖",key="box1"):
-                if sorted_data[state.box_counter[key]] not in state.bookmarks[key]:
-                    state.bookmarks[key].append(sorted_data[state.box_counter[key]])                                        
+        if b_c2.button("Save 💾",key="box1"):
+            save_current_image(metaData["metaData"]["savePath"],currData)
 
-            if b_c2.button("Save 💾",key="box1"):
-                save_current_image(metaData["metaData"]["savePath"],currData)
-
-    except:
-        if "imagePath" not in currData: 
-            st.error("\"imagePath\" missing from data")
-        if "bbox" not in currData: 
-            st.error("\"bbox\" missing from data")
-        if "outputs" not in currData:
-            st.error("\"outputs\" missing from data")   
+    # except:
+    #     if "imagePath" not in currData: 
+    #         st.error("\"imagePath\" missing from data")
+    #     if "bbox" not in currData: 
+    #         st.error("\"bbox\" missing from data")
+    #     if "outputs" not in currData:
+    #         st.error("\"outputs\" missing from data")   
 
 
     # Sync data for all components after updation of a single component to avoid rollbacks
