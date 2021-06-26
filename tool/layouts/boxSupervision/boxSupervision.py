@@ -210,7 +210,8 @@ def app(metaData):
 
     sort_by = st.sidebar.selectbox(
         'Sort by (metrics)',
-        list(selected_region_data[0]["metrics"].keys())+["None"]
+        # list(selected_region_data[0]["metrics"].keys())+["None"]
+        ["hd","iou","None"]
     )
 
     order = st.sidebar.selectbox(
