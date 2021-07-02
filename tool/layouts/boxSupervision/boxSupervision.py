@@ -1,5 +1,5 @@
-import layouts.boxSupervision.PlotImage as PlotImage
-import SessionState
+import tool.layouts.boxSupervision.PlotImage as PlotImage
+import tool.SessionState as SessionState
 import streamlit as st
 import json
 

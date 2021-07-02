@@ -1,13 +1,13 @@
 # # import essential libraries
 import streamlit as st
-import SessionState
+import tool.SessionState as SessionState
 
 # # import pre-defined layouts
 
 # import boundaryNetApp
-from layouts.boxSupervision import boxSupervision
-from layouts.fullyAutomatic import fullyAutomatic
-from layouts.OCR.src import OCR
+from tool.layouts.boxSupervision import boxSupervision
+# from tool.layouts.fullyAutomatic import fullyAutomatic
+# from tool.layouts.OCR.src import OCR
 
 
 
@@ -24,7 +24,7 @@ from uuid import uuid4
 
 
 # # import config file
-from config import metaDataDir,docVisorRepo,save_dir
+from tool.config import metaDataDir,docVisorRepo,save_dir
 
 
 try:
@@ -61,9 +61,9 @@ jsonDataExample = {
 
 pageLayoutFileMap = {
 
-    "Box-supervised Region Parsing":boxSupervision,
-    "Fully Automatic Region Parsing":fullyAutomatic,
-    "OCR":OCR
+    "Box-supervised Region Parsing":boxSupervision#,
+    # "Fully Automatic Region Parsing":fullyAutomatic,
+    # "OCR":OCR
 
 }
 
