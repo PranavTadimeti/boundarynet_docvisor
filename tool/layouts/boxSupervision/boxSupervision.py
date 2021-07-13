@@ -33,8 +33,13 @@ def get_json_data(metaData):
         outputMasks = metaData["outputMasks"]
     else:
         outputMasks = None
+    
+    if "defaultDisplayed" in metaData.keys():
+        defaultDisplayed = metaData["defaultDisplayed"]
+    else:
+        defaultDisplayed = None
 
-    return data,outputMasks
+    return data,outputMasks,defaultDisplayed
 
 def filter_by_dataset(dataset,data):
     """
@@ -140,7 +145,7 @@ def app(metaData):
     # Key value for the current page layout to avoid conflicts with the other pages of the same layout type (box-supervised layout in this case)
 
     key = metaData["metaData"]["key"]
-    data,outputMasks = get_json_data(metaData["metaData"])
+    data,outputMasks,defaultDisplayed = get_json_data(metaData["metaData"])
 
     # Gets current state of app, so that session variables such as counter are preserved after the app restarts
     
@@ -169,6 +174,10 @@ def app(metaData):
 
             if outputMasks[output_type]:
                 temp[output_type+"-mask"] = False
+
+                if defaultDisplayed is not None:
+                    for d in defaultDisplayed:
+                        temp[d] = True    
         
         state.outputs_locked[key] = temp
 
@@ -261,48 +270,45 @@ def app(metaData):
     if "collection" in currData:
         st.info("This image is taken from the collection: "+currData["collection"]) 
 
-    # try:
-    region_img = PlotImage.RegionImage(currData,outputMasks,state.outputs_locked[key])
-    fig = region_img.renderImage()
+    try:
+        region_img = PlotImage.RegionImage(currData,outputMasks,state.outputs_locked[key])
+        fig = region_img.renderImage()
 
-    st.plotly_chart(fig)
+        st.plotly_chart(fig)
 
-    metricsStr = display_metrics(currData)
-    st.write(metricsStr)
-    
-    b_c1,_,b_c2 = st.beta_columns([3,0.1,20])
-
-    if dataset_selected == "bookmarks":
+        metricsStr = display_metrics(currData)
+        st.write(metricsStr)
         
-        if b_c1.button("Save 💾",key="box1"):
-            save_current_image(metaData["metaData"]["savePath"],currData)    
+        b_c1,_,b_c2 = st.beta_columns([3,0.1,20])
 
-        if b_c2.button("Save All 💾",key="box1"):
+        if dataset_selected == "bookmarks":
             
-            for b in state.bookmarks[key]:
-                save_current_image(metaData["metaData"]["savePath"],b)                
-        
-    else:
-        
-        if b_c1.button("Bookmark 🔖",key="box1"):
-            if sorted_data[state.box_counter[key]] not in state.bookmarks[key]:
-                state.bookmarks[key].append(sorted_data[state.box_counter[key]])                                        
+            if b_c1.button("Save 💾",key="box1"):
+                save_current_image(metaData["metaData"]["savePath"],currData)    
 
-        if b_c2.button("Save 💾",key="box1"):
-            save_current_image(metaData["metaData"]["savePath"],currData)
+            if b_c2.button("Save All 💾",key="box1"):
+                
+                for b in state.bookmarks[key]:
+                    save_current_image(metaData["metaData"]["savePath"],b)                
+            
+        else:
+            
+            if b_c1.button("Bookmark 🔖",key="box1"):
+                if sorted_data[state.box_counter[key]] not in state.bookmarks[key]:
+                    state.bookmarks[key].append(sorted_data[state.box_counter[key]])                                        
 
-    # except:
-    #     if "imagePath" not in currData: 
-    #         st.error("\"imagePath\" missing from data")
-    #     if "bbox" not in currData: 
-    #         st.error("\"bbox\" missing from data")
-    #     if "outputs" not in currData:
-    #         st.error("\"outputs\" missing from data")   
+            if b_c2.button("Save 💾",key="box1"):
+                save_current_image(metaData["metaData"]["savePath"],currData)
+
+    except:
+        if "imagePath" not in currData: 
+            st.error("\"imagePath\" missing from data")
+        if "bbox" not in currData: 
+            st.error("\"bbox\" missing from data")
+        if "outputs" not in currData:
+            st.error("\"outputs\" missing from data")   
 
 
     # Sync data for all components after updation of a single component to avoid rollbacks
-
-    st.warning("To change or view additional display elements, please click on 'Display Options'.")
-    st.info("For a detailed explanation of the navigation and visualization process of DocVisor, kindly visit the [documentation](https://ihdia.iiit.ac.in/docvisor/box_navigation.html)")
 
     state.sync()
