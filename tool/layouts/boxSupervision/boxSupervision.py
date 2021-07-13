@@ -308,6 +308,8 @@ def app(metaData):
         if "outputs" not in currData:
             st.error("\"outputs\" missing from data")   
 
+    st.warning("To change or view additional display elements, please click on 'Display Options'.")
+    st.info("For a detailed explanation of the navigation and visualization process of DocVisor, kindly visit the [documentation](https://ihdia.iiit.ac.in/docvisor/box_navigation.html)")
 
     # Sync data for all components after updation of a single component to avoid rollbacks
 
